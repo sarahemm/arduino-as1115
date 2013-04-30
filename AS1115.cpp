@@ -47,7 +47,7 @@ void AS1115::setDigitDecode(byte digit, byte decode) {
 void AS1115::setIntensity(byte digit, byte intensity) {
   byte regBuf;
   regBuf = as1115ReadRegister(REG_DIGIT01_INTEN + digit/2);
-  regBuf = (regBuf & (digit % 2 == 0 ? 0x0F : 0xF0) | map(intensity, 0, 255, 0, 15);
+  regBuf = (regBuf & (digit % 2 == 0 ? 0x0F : 0xF0)) | map(intensity, 0, 255, 0, 15);
   as1115WriteRegister(REG_DECODE_MODE, regBuf);
 }
 
@@ -130,6 +130,6 @@ byte AS1115::as1115ReadRegister(byte reg) {
 byte AS1115::as1115WriteRegisterBit(byte reg, byte bit, byte value) {
   byte regBuf;
   regBuf = as1115ReadRegister(reg);
-  BitWrite(regBuf, bit, value);
-  as1115WriteRegister(REG_DECODE_MODE, regBuf);
+  bitWrite(regBuf, bit, value);
+  return as1115WriteRegister(REG_DECODE_MODE, regBuf);
 }

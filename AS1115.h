@@ -72,9 +72,9 @@ class AS1115 {
     AS1115(byte);
     AS1115(void);
     void setDigitDecode(byte, byte);
-    void setIntensity(byte);
+    void setIntensity(byte, byte);
     void setFont(byte);
-    byte digitWrite(byte, byte);
+    void digitWrite(byte, byte);
   
   // library-accessible "private" interface
   private:
@@ -82,7 +82,7 @@ class AS1115 {
     byte cur_font;
     byte as1115WriteRegister(byte, byte);
     byte as1115ReadRegister(byte);
-    void as1115WriteRegisterBit(byte, byte, byte);
+    byte as1115WriteRegisterBit(byte, byte, byte);
 };
 
 #endif // ARDUINO < 100
