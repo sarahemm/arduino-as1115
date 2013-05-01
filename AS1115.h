@@ -50,6 +50,8 @@
 
 #define DECODE_RAW        0x00
 #define DECODE_FONT       0x01
+#define DECODE_ALL_RAW    0x00
+#define DECODE_ALL_FONT   0xFF
 
 #define FONT_CODEB        0x00
 #define FONT_HEX          0x01
@@ -71,7 +73,8 @@ class AS1115 {
   public:
     AS1115(byte);
     AS1115(void);
-    void setDigitDecode(byte, byte);
+    void setDecode(byte, byte);
+    void setDecode(byte);
     void setIntensity(byte, byte);
     void setFont(byte);
     void digitWrite(byte, byte);

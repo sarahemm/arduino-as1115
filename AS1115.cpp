@@ -19,7 +19,7 @@
 AS1115::AS1115(byte chipAddress) {
   addr = chipAddress;
   cur_font = FONT_CODEB;
-  Wire.begin();
+  Wire.begin(addr);
 }
 
 AS1115::AS1115(void) {
@@ -31,12 +31,20 @@ AS1115::AS1115(void) {
 // Functions available in Arduino sketches, this library, and other libraries
 
 // Description: Configure the specified digit to be font-decoded or raw
-// Syntax: AS1115Instance.setDigitDecode(digit, decode);
+// Syntax: AS1115Instance.setDecode(digit, decode);
 // Parameter: digit - Digit to modify
 // Parameter: decode - DECODE_FONT or DECODE_RAW
 // Returns: nothing
-void AS1115::setDigitDecode(byte digit, byte decode) {
+void AS1115::setDecode(byte digit, byte decode) {
   as1115WriteRegisterBit(REG_DECODE_MODE, digit, decode);
+}
+
+// Description: Configure all digits at once to be font-decoded or raw
+// Syntax: AS1115Instance.setDecode(decode);
+// Parameter: decode - Bitmap of 8x DECODE_FONT or DECODE_RAW
+// Returns: nothing
+void AS1115::setDecode(byte decode) {
+  as1115WriteRegister(REG_DECODE_MODE, decode);
 }
 
 // Description: Configure the intensity of the specified digit (or overall display)
