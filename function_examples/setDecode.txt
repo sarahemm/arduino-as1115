@@ -1,0 +1,13 @@
+#include <Wire.h>
+#include <AS1115.h>
+
+// Create an AS1115 instance to communicate with the chip at address 0x00
+AS1115 display = AS1115(0x00);
+
+void setup() {
+  // Set entire display to raw pixel mode, not using any decode
+  display.setDecode(DECODE_ALL_RAW);
+  
+  // Set digit 4 to decode using a font, not RAW pixels
+  display.setDecode(4, DECODE_RAW);
+}

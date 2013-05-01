@@ -1,0 +1,10 @@
+#include <Wire.h>
+#include <AS1115.h>
+
+// Create an AS1115 instance to communicate with the chip at address 0x00
+AS1115 display = AS1115(0x00);
+
+void setup() {
+  // Set digit 2 to half-brightness
+  display.setIntensity(2, 128);
+}

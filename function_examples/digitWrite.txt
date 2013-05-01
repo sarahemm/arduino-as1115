@@ -1,0 +1,19 @@
+#include <Wire.h>
+#include <AS1115.h>
+
+// Create an AS1115 instance to communicate with the chip at address 0x00
+AS1115 display = AS1115(0x00);
+
+void setup() {
+  // Set the font to HEX so we can display 0-F properly
+  display.setFont(FONT_HEX);
+  
+  // Display a 9 on digit 0
+  display.digitWrite(0, 9);
+  
+  // display an F on digit 1
+  display.digitWrite(1, 0x0F);
+  
+  // display an A on digit 2
+  display.digitWrite(2, 'A');
+}
