@@ -18,20 +18,8 @@
 // Returns: Instance of AS1115 associated with a specific chip.
 AS1115::AS1115(byte chipAddress) {
   addr = chipAddress;
-  cur_font = FONT_CODEB;
+  cur_font = FONT_HEX;
   Wire.begin();
-  
-  // reset the chip and start it up
-  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_RESET_FEATUREREG);
-  
-  // ask the chips at this address to use the strapped address, not the factory 0x00
-  as1115WriteRegister(REG_SELF_ADDR, 0xFF);
-  delay(20);
-  
-  // display all digits, full brightness, using the hex font
-  as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
-  setIntensity(INTENSITY_GLOBAL, 0xFF);
-  setFont(FONT_HEX);
 }
 
 AS1115::AS1115(void) {
@@ -41,6 +29,25 @@ AS1115::AS1115(void) {
 
 // Public Methods //////////////////////////////////////////////////////////////
 // Functions available in Arduino sketches, this library, and other libraries
+
+// Description: Initialize the AS1115 chip
+// Syntax: AS1115Instance.begin();
+// Parameter: none
+// Returns: nothing
+void AS1115::begin(void) {
+  // reset the chip and start it up
+  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_RESET_FEATUREREG);
+  
+  // ask the chips at this address to use the strapped address, not the factory 0x00
+  as1115WriteRegister(REG_SELF_ADDR, 0x01);
+  delay(20);
+  
+  // display all digits, full brightness, decoded using the hex font
+  as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
+  setIntensity(0xFF);
+  setDecode(DECODE_ALL_FONT);
+  setFont(FONT_HEX);
+}
 
 // Description: Configure the specified digit to be font-decoded or raw
 // Syntax: AS1115Instance.setDecode(digit, decode);
@@ -59,17 +66,25 @@ void AS1115::setDecode(byte decode) {
   as1115WriteRegister(REG_DECODE_MODE, decode);
 }
 
-// FIXME: this should use overloading like setDecode, not a global flag
+// Description: Configure the intensity of the entire display
+// Syntax: AS1115Instance.setIntensity(intensity);
+// Parameter: intensity - New intensity (0-255)
+// Returns: nothing
+void AS1115::setIntensity(byte intensity) {
+  as1115WriteRegister(REG_GLOBAL_INTEN, intensity);
+}
+
 // Description: Configure the intensity of the specified digit (or overall display)
-// Syntax: AS1115Instance.setIntensity(digit, decode);
+// Syntax: AS1115Instance.setIntensity(digit, intensity);
 // Parameter: digit - Digit to modify (or INTENSITY_GLOBAL)
 // Parameter: intensity - New intensity (0-255)
 // Returns: nothing
 void AS1115::setIntensity(byte digit, byte intensity) {
   byte regBuf;
-  regBuf = as1115ReadRegister(REG_DIGIT01_INTEN + digit/2);
+  byte regAddr = REG_DIGIT01_INTEN + digit/2;
+  regBuf = as1115ReadRegister(regAddr);
   regBuf = (regBuf & (digit % 2 == 0 ? 0x0F : 0xF0)) | map(intensity, 0, 255, 0, 15);
-  as1115WriteRegister(REG_DECODE_MODE, regBuf);
+  as1115WriteRegister(regAddr, regBuf);
 }
 
 // Description: Configure the display font (Code B or HEX)

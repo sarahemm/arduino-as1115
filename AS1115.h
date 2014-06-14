@@ -56,9 +56,6 @@
 #define FONT_CODEB        0x00
 #define FONT_HEX          0x01
 
-// global intensity register is 6 below the digit registers
-#define INTENSITY_GLOBAL  -6
-
 #define REG_FEATURE_EXTCLK      0x00
 #define REG_FEATURE_RESET       0x01
 #define REG_FEATURE_FONT        0x02
@@ -78,8 +75,10 @@ class AS1115 {
   public:
     AS1115(byte);
     AS1115(void);
+    void begin(void);
     void setDecode(byte, byte);
     void setDecode(byte);
+    void setIntensity(byte);
     void setIntensity(byte, byte);
     void setFont(byte);
     void digitWrite(byte, byte);
