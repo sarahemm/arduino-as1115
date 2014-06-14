@@ -67,6 +67,11 @@
 #define REG_FEATURE_BLINKSYNC   0x06
 #define REG_FEATURE_BLINKSTART  0x07
 
+#define REG_SHUTDOWN_SHUTDOWN             0x00
+#define REG_SHUTDOWN_RUNNING              0x01
+#define REG_SHUTDOWN_RESET_FEATUREREG     0x00
+#define REG_SHUTDOWN_PRESERVE_FEATUREREG  0x01
+
 // library interface description
 class AS1115 {
   // user-accessible "public" interface
@@ -78,6 +83,7 @@ class AS1115 {
     void setIntensity(byte, byte);
     void setFont(byte);
     void digitWrite(byte, byte);
+    void testMode(byte);
   
   // library-accessible "private" interface
   private:

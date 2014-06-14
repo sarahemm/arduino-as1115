@@ -19,7 +19,19 @@
 AS1115::AS1115(byte chipAddress) {
   addr = chipAddress;
   cur_font = FONT_CODEB;
-  Wire.begin(addr);
+  Wire.begin();
+  
+  // reset the chip and start it up
+  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_RESET_FEATUREREG);
+  
+  // ask the chips at this address to use the strapped address, not the factory 0x00
+  as1115WriteRegister(REG_SELF_ADDR, 0xFF);
+  delay(20);
+  
+  // display all digits, full brightness, using the hex font
+  as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
+  setIntensity(INTENSITY_GLOBAL, 0xFF);
+  setFont(FONT_HEX);
 }
 
 AS1115::AS1115(void) {
@@ -47,6 +59,7 @@ void AS1115::setDecode(byte decode) {
   as1115WriteRegister(REG_DECODE_MODE, decode);
 }
 
+// FIXME: this should use overloading like setDecode, not a global flag
 // Description: Configure the intensity of the specified digit (or overall display)
 // Syntax: AS1115Instance.setIntensity(digit, decode);
 // Parameter: digit - Digit to modify (or INTENSITY_GLOBAL)
@@ -66,6 +79,14 @@ void AS1115::setIntensity(byte digit, byte intensity) {
 void AS1115::setFont(byte font) {
   as1115WriteRegisterBit(REG_FEATURE, REG_FEATURE_FONT, font);
   cur_font = font;
+}
+
+// Description: Turn on/off test mode (all digits on)
+// Syntax: AS1115Instance.testMode(void);
+// Parameters: onoff - 1 for test mode on, 0 for test mode off
+// Returns: nothing
+void AS1115::testMode(byte onoff) {
+  as1115WriteRegister(REG_DISP_TEST, onoff);
 }
 
 // Description: Write a digit (or series of 8 pixels) to the display
