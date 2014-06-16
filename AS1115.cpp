@@ -110,6 +110,16 @@ void AS1115::testMode(byte onoff) {
 // Parameter: value - Value for the digit
 // Returns: nothing
 void AS1115::digitWrite(byte digit, byte value) {
+  digitWrite(digit, value, 0x00);
+}
+
+// Description: Write a digit (or series of 8 pixels) to the display
+// Syntax: AS1115Instance.digitWrite(digit, value, dp);
+// Parameter: digit - Digit to modify
+// Parameter: value - Value for the digit
+// Parameter: dp - Decmal point on/off
+// Returns: nothing
+void AS1115::digitWrite(byte digit, byte value, byte dp) {
   byte regBuf;
   if(cur_font == FONT_CODEB) {
     switch(value) {
@@ -148,12 +158,17 @@ void AS1115::digitWrite(byte digit, byte value) {
         value = 0x0F; break;
     }
   }
+  if(dp == DP_ON) value |= 0x80;
   as1115WriteRegister(REG_DIGIT0 + digit, value);
 }
 
 // Private Methods /////////////////////////////////////////////////////////////
 // Functions only available to other functions in this library
 byte AS1115::as1115WriteRegister(byte reg, byte val) {
+  //Serial.print("Writing 0x");
+  //Serial.print(val, HEX);
+  //Serial.print(" to register 0x");
+  //Serial.println(reg, HEX);
   Wire.beginTransmission(addr);
   Wire.write(reg);
   Wire.write(val);
@@ -168,6 +183,10 @@ byte AS1115::as1115ReadRegister(byte reg) {
   Wire.endTransmission();
   Wire.requestFrom((uint8_t)addr, (uint8_t)1);
   data = Wire.read();
+  //Serial.print("Read 0x");
+  //Serial.print(data, HEX);
+  //Serial.print(" from register 0x");
+  //Serial.println(reg, HEX);
   return data;
 }
 
@@ -175,5 +194,5 @@ byte AS1115::as1115WriteRegisterBit(byte reg, byte bit, byte value) {
   byte regBuf;
   regBuf = as1115ReadRegister(reg);
   bitWrite(regBuf, bit, value);
-  return as1115WriteRegister(REG_DECODE_MODE, regBuf);
+  return as1115WriteRegister(reg, regBuf);
 }

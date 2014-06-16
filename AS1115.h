@@ -69,6 +69,9 @@
 #define REG_SHUTDOWN_RESET_FEATUREREG     0x00
 #define REG_SHUTDOWN_PRESERVE_FEATUREREG  0x01
 
+#define DP_OFF  0x00
+#define DP_ON   0x01
+
 // library interface description
 class AS1115 {
   // user-accessible "public" interface
@@ -82,6 +85,7 @@ class AS1115 {
     void setIntensity(byte, byte);
     void setFont(byte);
     void digitWrite(byte, byte);
+    void digitWrite(byte, byte, byte);
     void testMode(byte);
   
   // library-accessible "private" interface
