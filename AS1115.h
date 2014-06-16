@@ -27,7 +27,7 @@
 #define REG_GLOBAL_INTEN  0x0A
 #define REG_SCAN_LIMIT    0x0B
 #define REG_SHUTDOWN      0x0C
-#define REG_SELF_ADDR     0x0D
+#define REG_SELF_ADDR     0x2D
 #define REG_FEATURE       0x0E
 #define REG_DISP_TEST     0x0F
 

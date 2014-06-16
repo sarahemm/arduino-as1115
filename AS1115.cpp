@@ -35,12 +35,20 @@ AS1115::AS1115(void) {
 // Parameter: none
 // Returns: nothing
 void AS1115::begin(void) {
-  // reset the chip and start it up
-  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_RESET_FEATUREREG);
-  
-  // ask the chips at this address to use the strapped address, not the factory 0x00
-  as1115WriteRegister(REG_SELF_ADDR, 0x01);
+  // start up any chips at 0x00
+  Wire.beginTransmission(0x00);
+  Wire.write(REG_SHUTDOWN);
+  Wire.write(REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_PRESERVE_FEATUREREG);
+  Wire.endTransmission();
+  // ask all chips on the bus at 0x00 to use the strapped address, not the factory 0x00
+  Wire.beginTransmission(0x00);
+  Wire.write(REG_SELF_ADDR);
+  Wire.write(0x01);
+  Wire.endTransmission();
   delay(20);
+  
+  // reset this chip and start it up
+  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_RESET_FEATUREREG);  
   
   // display all digits, full brightness, decoded using the hex font
   as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
