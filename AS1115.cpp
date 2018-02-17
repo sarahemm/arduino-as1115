@@ -79,7 +79,7 @@ void AS1115::setDecode(byte decode) {
 // Parameter: intensity - New intensity (0-255)
 // Returns: nothing
 void AS1115::setIntensity(byte intensity) {
-  as1115WriteRegister(REG_GLOBAL_INTEN, intensity);
+  as1115WriteRegister(REG_GLOBAL_INTEN, map(intensity, 0, 255, 0, 15));
 }
 
 // Description: Configure the intensity of the specified digit (or overall display)
