@@ -67,7 +67,7 @@
 #define REG_SHUTDOWN_SHUTDOWN             0x00
 #define REG_SHUTDOWN_RUNNING              0x01
 #define REG_SHUTDOWN_RESET_FEATUREREG     0x00
-#define REG_SHUTDOWN_PRESERVE_FEATUREREG  0x01
+#define REG_SHUTDOWN_PRESERVE_FEATUREREG  0x80
 
 #define DP_OFF  0x00
 #define DP_ON   0x01
@@ -77,6 +77,7 @@ class AS1115 {
   // user-accessible "public" interface
   public:
     AS1115(byte);
+    AS1115(byte, byte);
     AS1115(void);
     void begin(void);
     void setDecode(byte, byte);
@@ -92,7 +93,9 @@ class AS1115 {
   private:
     byte addr;
     byte cur_font;
+    byte wire_nbr;
     byte as1115WriteRegister(byte, byte);
+    byte as1115WriteRegister(byte, byte, byte);
     byte as1115ReadRegister(byte);
     byte as1115WriteRegisterBit(byte, byte, byte);
 };

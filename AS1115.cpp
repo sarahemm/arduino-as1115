@@ -8,9 +8,33 @@
 
 // include description files for Wire, as the chip uses I2C
 #include "Wire.h"
+#if defined(__AVR_ATmega328PB__)
+  #define WIRE1_SUPPORT
+	#include "Wire1.h"
+#endif
 
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
+
+// Description: Creates a variable of type AS1115, to communicate with the chip via a specific Wire number.
+// Syntax: AS1115(address, wirenbr)
+// Parameter: address - Address on the I2C bus of the chip to communicate with
+// Parameter: wirenbr - Number of the wire library to use
+// Returns: Instance of AS1115 associated with a specific chip.
+AS1115::AS1115(byte chipAddress, byte wireNbr) {
+  addr = chipAddress;
+  cur_font = FONT_HEX;
+  wire_nbr = wireNbr;
+  if(wire_nbr == 0) {
+    Wire.begin();
+#ifdef WIRE1_SUPPORT
+	} else if(wire_nbr == 1) {
+    Wire1.begin();
+#endif
+	} else {
+    return;
+	}
+}
 
 // Description: Creates a variable of type AS1115, to communicate with the chip.
 // Syntax: AS1115(address)
@@ -19,6 +43,7 @@
 AS1115::AS1115(byte chipAddress) {
   addr = chipAddress;
   cur_font = FONT_HEX;
+  wire_nbr = 0;
   Wire.begin();
 }
 
@@ -36,15 +61,9 @@ AS1115::AS1115(void) {
 // Returns: nothing
 void AS1115::begin(void) {
   // start up any chips at 0x00
-  Wire.beginTransmission(0x00);
-  Wire.write(REG_SHUTDOWN);
-  Wire.write(REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_PRESERVE_FEATUREREG);
-  Wire.endTransmission();
+  as1115WriteRegister(REG_SHUTDOWN, REG_SHUTDOWN_RUNNING | REG_SHUTDOWN_PRESERVE_FEATUREREG, 0x00);
   // ask all chips on the bus at 0x00 to use the strapped address, not the factory 0x00
-  Wire.beginTransmission(0x00);
-  Wire.write(REG_SELF_ADDR);
-  Wire.write(0x01);
-  Wire.endTransmission();
+  as1115WriteRegister(REG_SELF_ADDR, 0x01, 0x00);
   delay(20);
   
   // reset this chip and start it up
@@ -172,25 +191,54 @@ void AS1115::digitWrite(byte digit, byte value, byte dp) {
 
 // Private Methods /////////////////////////////////////////////////////////////
 // Functions only available to other functions in this library
+byte AS1115::as1115WriteRegister(byte reg, byte val, byte write_addr) {
+  /*
+  Serial.print("Writing 0x");
+  Serial.print(val, HEX);
+  Serial.print(" to register 0x");
+  Serial.print(reg, HEX);
+  Serial.print(" on address 0x");
+  Serial.print(write_addr, HEX);
+  Serial.print(" using Wire");
+  Serial.println(wire_nbr, DEC);
+  */
+  if(wire_nbr == 0) {
+    Wire.beginTransmission(write_addr);
+    Wire.write(reg);
+    Wire.write(val);
+    return Wire.endTransmission();
+#ifdef WIRE1_SUPPORT
+  } else {
+    Wire1.beginTransmission(write_addr);
+    Wire1.write(reg);
+    Wire1.write(val);
+    return Wire1.endTransmission();
+  }
+#endif
+}
+
 byte AS1115::as1115WriteRegister(byte reg, byte val) {
-  //Serial.print("Writing 0x");
-  //Serial.print(val, HEX);
-  //Serial.print(" to register 0x");
-  //Serial.println(reg, HEX);
-  Wire.beginTransmission(addr);
-  Wire.write(reg);
-  Wire.write(val);
-  return Wire.endTransmission();
+  as1115WriteRegister(reg, val, addr);
 }
 
 byte AS1115::as1115ReadRegister(byte reg) {
   byte data;
   
-  Wire.beginTransmission(addr);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom((uint8_t)addr, (uint8_t)1);
-  data = Wire.read();
+  if(wire_nbr == 0) {
+    Wire.beginTransmission(addr);
+    Wire.write(reg);
+    Wire.endTransmission();
+    Wire.requestFrom((uint8_t)addr, (uint8_t)1);
+    data = Wire.read();
+#ifdef WIRE1_SUPPORT
+  } else {
+    Wire1.beginTransmission(addr);
+    Wire1.write(reg);
+    Wire1.endTransmission();
+    Wire1.requestFrom((uint8_t)addr, (uint8_t)1);
+    data = Wire1.read();
+#endif
+	}
   //Serial.print("Read 0x");
   //Serial.print(data, HEX);
   //Serial.print(" from register 0x");
