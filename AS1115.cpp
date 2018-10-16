@@ -246,6 +246,14 @@ byte AS1115::as1115ReadRegister(byte reg) {
   return data;
 }
 
+uint16_t AS1115::ReadKeysMul()
+{
+	uint8_t  Data1=as1115ReadRegister(REG_KEYA);
+	uint8_t  Data2=as1115ReadRegister(REG_KEYB);	
+	return ((unsigned int)Data1 << 8) + Data2;
+}
+
+
 byte AS1115::as1115WriteRegisterBit(byte reg, byte bit, byte value) {
   byte regBuf;
   regBuf = as1115ReadRegister(reg);

@@ -88,6 +88,7 @@ class AS1115 {
     void digitWrite(byte, byte);
     void digitWrite(byte, byte, byte);
     void testMode(byte);
+	uint16_t ReadKeysMul();
   
   // library-accessible "private" interface
   private:
