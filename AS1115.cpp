@@ -73,7 +73,7 @@ void AS1115::begin(void) {
   as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
   setIntensity(0xFF);
   setDecode(DECODE_ALL_FONT);
-  setFont(FONT_HEX);
+  setFont(cur_font);
 }
 
 // Description: Configure the specified digit to be font-decoded or raw
