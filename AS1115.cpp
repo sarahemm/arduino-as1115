@@ -213,8 +213,8 @@ byte AS1115::as1115WriteRegister(byte reg, byte val, byte write_addr) {
     Wire1.write(reg);
     Wire1.write(val);
     return Wire1.endTransmission();
-  }
 #endif
+  }
 }
 
 byte AS1115::as1115WriteRegister(byte reg, byte val) {
