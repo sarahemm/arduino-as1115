@@ -73,7 +73,7 @@ void AS1115::begin(void) {
   as1115WriteRegister(REG_SCAN_LIMIT, 0x07);
   setIntensity(0xFF);
   setDecode(DECODE_ALL_FONT);
-  setFont(FONT_HEX);
+  setFont(cur_font);
 }
 
 // Description: Configure the specified digit to be font-decoded or raw
@@ -245,6 +245,14 @@ byte AS1115::as1115ReadRegister(byte reg) {
   //Serial.println(reg, HEX);
   return data;
 }
+
+uint16_t AS1115::ReadKeysMul()
+{
+	uint8_t  Data1=as1115ReadRegister(REG_KEYA);
+	uint8_t  Data2=as1115ReadRegister(REG_KEYB);	
+	return ((unsigned int)Data1 << 8) + Data2;
+}
+
 
 byte AS1115::as1115WriteRegisterBit(byte reg, byte bit, byte value) {
   byte regBuf;

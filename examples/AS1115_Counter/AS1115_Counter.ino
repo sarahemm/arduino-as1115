@@ -7,6 +7,7 @@ byte counter = 0;
 void setup(void) {
   Serial.begin(115200);
   Serial.print("Initializing AS1115...");
+  disp.begin();
   disp.setFont(FONT_HEX);
   disp.setDecode(DECODE_ALL_FONT);
   disp.digitWrite(0, 0);
