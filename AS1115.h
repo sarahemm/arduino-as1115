@@ -95,10 +95,12 @@ class AS1115 {
     byte addr;
     byte cur_font;
     byte wire_nbr;
+    byte digit_decode;
     byte as1115WriteRegister(byte, byte);
     byte as1115WriteRegister(byte, byte, byte);
     byte as1115ReadRegister(byte);
     byte as1115WriteRegisterBit(byte, byte, byte);
+    byte as1115PrepareDigit(byte);
 };
 
 #endif // ARDUINO < 100

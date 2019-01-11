@@ -83,6 +83,7 @@ void AS1115::begin(void) {
 // Returns: nothing
 void AS1115::setDecode(byte digit, byte decode) {
   as1115WriteRegisterBit(REG_DECODE_MODE, digit, decode);
+  bitWrite(digit_decode, digit, decode);
 }
 
 // Description: Configure all digits at once to be font-decoded or raw
@@ -91,6 +92,7 @@ void AS1115::setDecode(byte digit, byte decode) {
 // Returns: nothing
 void AS1115::setDecode(byte decode) {
   as1115WriteRegister(REG_DECODE_MODE, decode);
+  digit_decode = decode;
 }
 
 // Description: Configure the intensity of the entire display
@@ -147,43 +149,9 @@ void AS1115::digitWrite(byte digit, byte value) {
 // Parameter: dp - Decmal point on/off
 // Returns: nothing
 void AS1115::digitWrite(byte digit, byte value, byte dp) {
-  byte regBuf;
-  if(cur_font == FONT_CODEB) {
-    switch(value) {
-      case '-':
-        value = 0x0A; break;
-      case 'E':
-        value = 0x0B; break;
-      case 'H':
-        value = 0x0C; break;
-      case 'L':
-        value = 0x0D; break;
-      case 'P':
-        value = 0x0E; break;
-      case ' ':
-        value = 0x0F; break;
-    }
-  } else {
-    switch(value) {
-      case 'a':
-      case 'A':
-        value = 0x0A; break;
-      case 'b':
-      case 'B':
-        value = 0x0B; break;
-      case 'c':
-      case 'C':
-        value = 0x0C; break;
-      case 'd':
-      case 'D':
-        value = 0x0D; break;
-      case 'e':
-      case 'E':
-        value = 0x0E; break;
-      case 'f':
-      case 'F':
-        value = 0x0F; break;
-    }
+  if(bitRead(digit_decode, digit) != 0) {
+    // this turns 'b' into 0xB, etc.
+    byte value = as1115PrepareDigit(value);
   }
   if(dp == DP_ON) value |= 0x80;
   as1115WriteRegister(REG_DIGIT0 + digit, value);
@@ -259,4 +227,44 @@ byte AS1115::as1115WriteRegisterBit(byte reg, byte bit, byte value) {
   regBuf = as1115ReadRegister(reg);
   bitWrite(regBuf, bit, value);
   return as1115WriteRegister(reg, regBuf);
+}
+
+byte AS1115::as1115PrepareDigit(byte raw_digit) {
+  if(cur_font == FONT_CODEB) {
+    switch(raw_digit) {
+      case '-':
+        return 0x0A;
+      case 'E':
+        return 0x0B;
+      case 'H':
+        return 0x0C;
+      case 'L':
+        return 0x0D;
+      case 'P':
+        return 0x0E;
+      case ' ':
+        return 0x0F;
+    }
+  } else {
+    switch(raw_digit) {
+      case 'a':
+      case 'A':
+        return 0x0A;
+      case 'b':
+      case 'B':
+        return 0x0B;
+      case 'c':
+      case 'C':
+        return 0x0C;
+      case 'd':
+      case 'D':
+        return 0x0D;
+      case 'e':
+      case 'E':
+        return 0x0E;
+      case 'f':
+      case 'F':
+        return 0x0F;
+    }
+  }
 }
